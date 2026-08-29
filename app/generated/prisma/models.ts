@@ -11,4 +11,5 @@
 export type * from './models/Client'
 export type * from './models/Driver'
 export type * from './models/Vehicle'
+export type * from './models/Delivery'
 export type * from './commonInputTypes'
