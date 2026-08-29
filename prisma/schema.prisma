@@ -22,3 +22,21 @@ model Client {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+enum DriverStatus {
+  AVAILABLE
+  ON_DELIVERY
+  OFF_DUTY
+}
+
+model Driver {
+  id            Int          @id @default(autoincrement())
+  firstName     String
+  lastName      String
+  email         String       @unique
+  phone         String?
+  licenseNumber String       @unique
+  status        DriverStatus @default(AVAILABLE)
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+}

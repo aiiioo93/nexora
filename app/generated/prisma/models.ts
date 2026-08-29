@@ -9,4 +9,5 @@
  * 🟢 You can import this file directly.
  */
 export type * from './models/Client'
+export type * from './models/Driver'
 export type * from './commonInputTypes'
