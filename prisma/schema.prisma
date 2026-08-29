@@ -40,3 +40,22 @@ model Driver {
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt
 }
+
+enum VehicleStatus {
+  AVAILABLE
+  ON_DELIVERY
+  MAINTENANCE
+  OUT_OF_SERVICE
+}
+
+model Vehicle {
+  id           Int           @id @default(autoincrement())
+  registration String        @unique
+  brand        String
+  model        String
+  year         Int
+  mileage      Int           @default(0)
+  status       VehicleStatus @default(AVAILABLE)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}

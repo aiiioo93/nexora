@@ -27,3 +27,8 @@ export type Client = Prisma.ClientModel
  * 
  */
 export type Driver = Prisma.DriverModel
+/**
+ * Model Vehicle
+ * 
+ */
+export type Vehicle = Prisma.VehicleModel
