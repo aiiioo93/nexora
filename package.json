@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
+    "smoke:delivery": "tsx scripts/smoke-delivery.ts",
     "test": "vitest",
     "test:run": "vitest run"
   },
