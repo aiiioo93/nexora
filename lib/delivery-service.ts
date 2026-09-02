@@ -64,6 +64,7 @@ export async function updateDeliveryStatusWithResources(
     const delivery = await tx.delivery.findUnique({
       where: { id },
       select: {
+        status: true,
         driverId: true,
         vehicleId: true,
       },
@@ -73,11 +74,23 @@ export async function updateDeliveryStatusWithResources(
       throw new Error("Livraison introuvable.")
     }
 
+    if (
+      delivery.status === "DELIVERED" ||
+      delivery.status === "CANCELLED"
+    ) {
+      throw new Error(
+        "Cette livraison est terminée et ne peut plus être modifiée."
+      )
+    }
+
     const isFinished =
       status === "DELIVERED" || status === "CANCELLED"
 
     const updatedDelivery = await tx.delivery.update({
-      where: { id },
+      where: {
+        id,
+        status: delivery.status,
+      },
       data: {
         status,
         deliveredAt: status === "DELIVERED" ? new Date() : null,

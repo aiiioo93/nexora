@@ -88,6 +88,9 @@ export default async function DeliveryPage({
     null,
     delivery.id
   )
+  const isFinalStatus =
+    delivery.status === "DELIVERED" ||
+    delivery.status === "CANCELLED"
 
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
@@ -243,53 +246,65 @@ export default async function DeliveryPage({
         </section>
 
         {/* CHANGEMENT DE STATUT */}
-        <section className="mt-6 rounded-xl border border-zinc-800 bg-zinc-900 p-4 sm:p-6">
-          <h2 className="font-medium">
-            Mettre à jour la livraison
-          </h2>
+        {isFinalStatus ? (
+          <section className="mt-6 rounded-xl border border-zinc-800 bg-zinc-900 p-4 sm:p-6">
+            <h2 className="font-medium">
+              Livraison terminée
+            </h2>
 
-          <p className="mt-1 text-sm text-zinc-500">
-            Modifiez l&apos;état opérationnel de cette mission.
-          </p>
+            <p className="mt-2 text-sm leading-6 text-zinc-400">
+              Cette livraison est terminée. Son statut ne peut plus être modifié.
+            </p>
+          </section>
+        ) : (
+          <section className="mt-6 rounded-xl border border-zinc-800 bg-zinc-900 p-4 sm:p-6">
+            <h2 className="font-medium">
+              Mettre à jour la livraison
+            </h2>
 
-          <form
-            action={updateStatusWithId}
-            className="mt-5 flex flex-col gap-3 sm:flex-row"
-          >
-            <select
-              name="status"
-              defaultValue={delivery.status}
-              className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 text-base outline-none focus:border-zinc-500"
+            <p className="mt-1 text-sm text-zinc-500">
+              Modifiez l&apos;état opérationnel de cette mission.
+            </p>
+
+            <form
+              action={updateStatusWithId}
+              className="mt-5 flex flex-col gap-3 sm:flex-row"
             >
-              <option value="ASSIGNED">
-                Assignée
-              </option>
+              <select
+                name="status"
+                defaultValue={delivery.status}
+                className="w-full rounded-lg border border-zinc-700 bg-zinc-950 px-4 py-3 text-base outline-none focus:border-zinc-500"
+              >
+                <option value="ASSIGNED">
+                  Assignée
+                </option>
 
-              <option value="IN_TRANSIT">
-                En cours
-              </option>
+                <option value="IN_TRANSIT">
+                  En cours
+                </option>
 
-              <option value="DELAYED">
-                En retard
-              </option>
+                <option value="DELAYED">
+                  En retard
+                </option>
 
-              <option value="DELIVERED">
-                Livrée
-              </option>
+                <option value="DELIVERED">
+                  Livrée
+                </option>
 
-              <option value="CANCELLED">
-                Annulée
-              </option>
-            </select>
+                <option value="CANCELLED">
+                  Annulée
+                </option>
+              </select>
 
-            <button
-              type="submit"
-              className="w-full rounded-lg bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-zinc-200 sm:w-auto"
-            >
-              Mettre à jour
-            </button>
-          </form>
-        </section>
+              <button
+                type="submit"
+                className="w-full rounded-lg bg-white px-5 py-3 text-sm font-medium text-black transition hover:bg-zinc-200 sm:w-auto"
+              >
+                Mettre à jour
+              </button>
+            </form>
+          </section>
+        )}
       </div>
     </main>
   )

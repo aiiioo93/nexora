@@ -6,7 +6,15 @@ import {
   updateDeliveryStatusWithResources,
 } from "@/lib/delivery-service"
 
-function createDatabaseMock() {
+function createDatabaseMock(
+  deliveryStatus:
+    | "PENDING"
+    | "ASSIGNED"
+    | "IN_TRANSIT"
+    | "DELIVERED"
+    | "DELAYED"
+    | "CANCELLED" = "IN_TRANSIT"
+) {
   const tx = {
     driver: {
       update: vi.fn().mockResolvedValue({ id: 2 }),
@@ -17,7 +25,7 @@ function createDatabaseMock() {
     delivery: {
       create: vi.fn().mockResolvedValue({ id: 10 }),
       findUnique: vi.fn().mockResolvedValue({
-        status: "IN_TRANSIT",
+        status: deliveryStatus,
         driverId: 2,
         vehicleId: 3,
       }),
@@ -87,7 +95,7 @@ describe("logique métier Delivery", () => {
     await updateDeliveryStatusWithResources(database, 10, "DELIVERED")
 
     expect(tx.delivery.update).toHaveBeenCalledWith({
-      where: { id: 10 },
+      where: { id: 10, status: "IN_TRANSIT" },
       data: {
         status: "DELIVERED",
         deliveredAt: new Date("2026-09-01T12:00:00.000Z"),
@@ -104,12 +112,12 @@ describe("logique métier Delivery", () => {
   })
 
   it("annule une livraison et libère les ressources", async () => {
-    const { database, tx } = createDatabaseMock()
+    const { database, tx } = createDatabaseMock("ASSIGNED")
 
     await updateDeliveryStatusWithResources(database, 10, "CANCELLED")
 
     expect(tx.delivery.update).toHaveBeenCalledWith({
-      where: { id: 10 },
+      where: { id: 10, status: "ASSIGNED" },
       data: { status: "CANCELLED", deliveredAt: null },
     })
     expect(tx.driver.update).toHaveBeenCalledWith({
@@ -120,6 +128,34 @@ describe("logique métier Delivery", () => {
       where: { id: 3 },
       data: { status: "AVAILABLE" },
     })
+  })
+
+  it("refuse de rouvrir une livraison DELIVERED vers IN_TRANSIT", async () => {
+    const { database, tx } = createDatabaseMock("DELIVERED")
+
+    await expect(
+      updateDeliveryStatusWithResources(database, 10, "IN_TRANSIT")
+    ).rejects.toThrow(
+      "Cette livraison est terminée et ne peut plus être modifiée."
+    )
+
+    expect(tx.delivery.update).not.toHaveBeenCalled()
+    expect(tx.driver.update).not.toHaveBeenCalled()
+    expect(tx.vehicle.update).not.toHaveBeenCalled()
+  })
+
+  it("refuse de rouvrir une livraison CANCELLED vers ASSIGNED", async () => {
+    const { database, tx } = createDatabaseMock("CANCELLED")
+
+    await expect(
+      updateDeliveryStatusWithResources(database, 10, "ASSIGNED")
+    ).rejects.toThrow(
+      "Cette livraison est terminée et ne peut plus être modifiée."
+    )
+
+    expect(tx.delivery.update).not.toHaveBeenCalled()
+    expect(tx.driver.update).not.toHaveBeenCalled()
+    expect(tx.vehicle.update).not.toHaveBeenCalled()
   })
 
   it("supprime une livraison active et libère les ressources", async () => {
