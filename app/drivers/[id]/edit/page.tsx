@@ -2,6 +2,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import prisma from "@/lib/prisma"
+import { parseRouteId } from "@/lib/route-id"
 import { updateDriver } from "../../actions"
 
 type EditDriverPageProps = {
@@ -14,10 +15,15 @@ export default async function EditDriverPage({
   params,
 }: EditDriverPageProps) {
   const { id } = await params
+  const driverId = parseRouteId(id)
+
+  if (driverId === null) {
+    notFound()
+  }
 
   const driver = await prisma.driver.findUnique({
     where: {
-      id: Number(id),
+      id: driverId,
     },
   })
 

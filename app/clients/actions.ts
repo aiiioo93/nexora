@@ -2,16 +2,8 @@
 
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
-import { z } from "zod"
-
 import prisma from "@/lib/prisma"
-
-const clientSchema = z.object({
-  name: z.string().min(2),
-  email: z.string().email(),
-  phone: z.string().optional(),
-  company: z.string().optional(),
-})
+import { clientSchema } from "@/lib/validations"
 
 export async function createClient(formData: FormData) {
   const data = clientSchema.parse({

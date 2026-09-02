@@ -3,53 +3,50 @@ import { notFound } from "next/navigation"
 
 import prisma from "@/lib/prisma"
 import { parseRouteId } from "@/lib/route-id"
-import { deleteVehicle } from "../../actions"
+import { deleteDelivery } from "../../actions"
 
-type DeleteVehiclePageProps = {
+type DeleteDeliveryPageProps = {
   params: Promise<{
     id: string
   }>
 }
 
-function getStatusLabel(status: string) {
-  switch (status) {
-    case "AVAILABLE":
-      return "Disponible"
-    case "ON_DELIVERY":
-      return "En livraison"
-    case "MAINTENANCE":
-      return "Maintenance"
-    case "OUT_OF_SERVICE":
-      return "Hors service"
-    default:
-      return status
-  }
-}
-
-export default async function DeleteVehiclePage({
+export default async function DeleteDeliveryPage({
   params,
-}: DeleteVehiclePageProps) {
+}: DeleteDeliveryPageProps) {
   const { id } = await params
-  const vehicleId = parseRouteId(id)
+  const deliveryId = parseRouteId(id)
 
-  if (vehicleId === null) {
+  if (deliveryId === null) {
     notFound()
   }
 
-  const vehicle = await prisma.vehicle.findUnique({
+  const delivery = await prisma.delivery.findUnique({
     where: {
-      id: vehicleId,
+      id: deliveryId,
+    },
+
+    include: {
+      client: true,
+      driver: true,
+      vehicle: true,
     },
   })
 
-  if (!vehicle) {
+  if (!delivery) {
     notFound()
   }
 
-  const deleteVehicleWithId = deleteVehicle.bind(
+  const deleteDeliveryWithId = deleteDelivery.bind(
     null,
-    vehicle.id
+    delivery.id
   )
+
+  const isActive =
+    delivery.status === "PENDING" ||
+    delivery.status === "ASSIGNED" ||
+    delivery.status === "IN_TRANSIT" ||
+    delivery.status === "DELAYED"
 
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
@@ -62,66 +59,78 @@ export default async function DeleteVehiclePage({
           </p>
 
           <h1 className="mt-2 text-2xl font-semibold">
-            Supprimer ce véhicule ?
+            Supprimer cette livraison ?
           </h1>
 
           <p className="mt-3 text-sm leading-6 text-zinc-400">
             Vous êtes sur le point de supprimer définitivement{" "}
             <span className="font-medium text-white">
-              {vehicle.brand} {vehicle.model}
+              {delivery.reference}
             </span>
             .
           </p>
 
           <div className="mt-6 rounded-lg border border-zinc-800 bg-zinc-950 p-4">
             <p className="font-medium">
-              {vehicle.brand} {vehicle.model}
+              {delivery.origin} → {delivery.destination}
             </p>
 
             <p className="mt-1 text-sm text-zinc-500">
-              {vehicle.registration}
+              {delivery.client.company ??
+                delivery.client.name}
             </p>
 
-            <div className="mt-4 grid grid-cols-2 gap-4">
+            <div className="mt-5 grid grid-cols-2 gap-4">
               <div>
                 <p className="text-xs text-zinc-600">
-                  Kilométrage
+                  Chauffeur
                 </p>
 
                 <p className="mt-1 text-sm text-zinc-300">
-                  {vehicle.mileage.toLocaleString("fr-FR")} km
+                  {delivery.driver.firstName}{" "}
+                  {delivery.driver.lastName}
                 </p>
               </div>
 
               <div>
                 <p className="text-xs text-zinc-600">
-                  Statut
+                  Véhicule
                 </p>
 
                 <p className="mt-1 text-sm text-zinc-300">
-                  {getStatusLabel(vehicle.status)}
+                  {delivery.vehicle.registration}
                 </p>
               </div>
             </div>
           </div>
 
+          {isActive && (
+            <div className="mt-6 rounded-lg border border-amber-950 bg-amber-950/20 p-4">
+              <p className="text-sm leading-6 text-amber-300">
+                Cette livraison est encore active. Sa suppression
+                remettra automatiquement le chauffeur et le véhicule
+                au statut disponible.
+              </p>
+            </div>
+          )}
+
           <div className="mt-6 rounded-lg border border-red-950 bg-red-950/20 p-4">
             <p className="text-sm leading-6 text-red-300">
-              Cette action est irréversible. Le véhicule sera supprimé
-              définitivement de la base de données.
+              Cette action est irréversible. La livraison sera
+              définitivement supprimée de PostgreSQL.
             </p>
           </div>
 
           <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
             <Link
-              href={`/vehicles/${vehicle.id}`}
+              href={`/deliveries/${delivery.id}`}
               className="flex w-full items-center justify-center rounded-lg border border-zinc-700 px-4 py-3 text-sm font-medium transition hover:bg-zinc-800 sm:w-auto"
             >
               Annuler
             </Link>
 
             <form
-              action={deleteVehicleWithId}
+              action={deleteDeliveryWithId}
               className="w-full sm:w-auto"
             >
               <button

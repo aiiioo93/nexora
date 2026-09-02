@@ -2,6 +2,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import prisma from "@/lib/prisma"
+import { parseRouteId } from "@/lib/route-id"
 import { deleteDriver } from "../../actions"
 
 type DeleteDriverPageProps = {
@@ -14,10 +15,15 @@ export default async function DeleteDriverPage({
   params,
 }: DeleteDriverPageProps) {
   const { id } = await params
+  const driverId = parseRouteId(id)
+
+  if (driverId === null) {
+    notFound()
+  }
 
   const driver = await prisma.driver.findUnique({
     where: {
-      id: Number(id),
+      id: driverId,
     },
   })
 

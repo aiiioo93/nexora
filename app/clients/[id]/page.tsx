@@ -2,6 +2,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import prisma from "@/lib/prisma"
+import { parseRouteId } from "@/lib/route-id"
 
 type ClientPageProps = {
   params: Promise<{
@@ -13,10 +14,15 @@ export default async function ClientPage({
   params,
 }: ClientPageProps) {
   const { id } = await params
+  const clientId = parseRouteId(id)
+
+  if (clientId === null) {
+    notFound()
+  }
 
   const client = await prisma.client.findUnique({
     where: {
-      id: Number(id),
+      id: clientId,
     },
   })
 

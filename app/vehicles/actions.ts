@@ -2,24 +2,8 @@
 
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
-import { z } from "zod"
-
 import prisma from "@/lib/prisma"
-
-const vehicleSchema = z.object({
-  registration: z.string().min(2),
-  brand: z.string().min(2),
-  model: z.string().min(1),
-  year: z.coerce.number().int().min(1900).max(2100),
-  mileage: z.coerce.number().int().min(0),
-
-  status: z.enum([
-    "AVAILABLE",
-    "ON_DELIVERY",
-    "MAINTENANCE",
-    "OUT_OF_SERVICE",
-  ]),
-})
+import { vehicleSchema } from "@/lib/validations"
 
 export async function createVehicle(formData: FormData) {
   const data = vehicleSchema.parse({

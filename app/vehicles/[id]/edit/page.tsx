@@ -2,6 +2,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import prisma from "@/lib/prisma"
+import { parseRouteId } from "@/lib/route-id"
 import { updateVehicle } from "../../actions"
 
 type EditVehiclePageProps = {
@@ -14,10 +15,15 @@ export default async function EditVehiclePage({
   params,
 }: EditVehiclePageProps) {
   const { id } = await params
+  const vehicleId = parseRouteId(id)
+
+  if (vehicleId === null) {
+    notFound()
+  }
 
   const vehicle = await prisma.vehicle.findUnique({
     where: {
-      id: Number(id),
+      id: vehicleId,
     },
   })
 

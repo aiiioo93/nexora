@@ -2,6 +2,7 @@ import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import prisma from "@/lib/prisma"
+import { parseRouteId } from "@/lib/route-id"
 
 type VehiclePageProps = {
   params: Promise<{
@@ -51,10 +52,15 @@ export default async function VehiclePage({
   params,
 }: VehiclePageProps) {
   const { id } = await params
+  const vehicleId = parseRouteId(id)
+
+  if (vehicleId === null) {
+    notFound()
+  }
 
   const vehicle = await prisma.vehicle.findUnique({
     where: {
-      id: Number(id),
+      id: vehicleId,
     },
   })
 

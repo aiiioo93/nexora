@@ -68,6 +68,7 @@ export default async function DeliveriesPage() {
     <main className="min-h-screen bg-zinc-950 text-white">
       <div className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 md:py-10">
 
+        {/* HEADER */}
         <header className="mb-6 md:mb-8">
           <p className="text-xs text-zinc-500 sm:text-sm">
             NEXORA · Operations
@@ -80,7 +81,7 @@ export default async function DeliveriesPage() {
               </h1>
 
               <p className="mt-2 text-sm text-zinc-400 sm:text-base">
-                Suivez et gérez les missions logistiques.
+                Suivez et gérez les missions logistiques de NEXORA.
               </p>
             </div>
 
@@ -93,8 +94,9 @@ export default async function DeliveriesPage() {
           </div>
         </header>
 
+        {/* AUCUNE LIVRAISON */}
         {deliveries.length === 0 ? (
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-12 text-center">
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900 px-4 py-12 text-center sm:px-6">
             <p className="font-medium">
               Aucune livraison
             </p>
@@ -102,6 +104,13 @@ export default async function DeliveriesPage() {
             <p className="mt-2 text-sm text-zinc-500">
               Créez votre première mission logistique.
             </p>
+
+            <Link
+              href="/deliveries/new"
+              className="mt-6 inline-flex w-full items-center justify-center rounded-lg bg-white px-4 py-3 text-sm font-medium text-black transition hover:bg-zinc-200 sm:w-auto"
+            >
+              Créer une livraison
+            </Link>
           </div>
         ) : (
           <>
@@ -113,12 +122,15 @@ export default async function DeliveriesPage() {
                   className="rounded-xl border border-zinc-800 bg-zinc-900 p-4"
                 >
                   <div className="flex items-start justify-between gap-3">
-                    <div>
-                      <p className="font-medium">
+                    <div className="min-w-0">
+                      <Link
+                        href={`/deliveries/${delivery.id}`}
+                        className="font-medium transition hover:text-zinc-300"
+                      >
                         {delivery.reference}
-                      </p>
+                      </Link>
 
-                      <p className="mt-1 text-sm text-zinc-500">
+                      <p className="mt-1 truncate text-sm text-zinc-500">
                         {delivery.client.company ??
                           delivery.client.name}
                       </p>
@@ -133,18 +145,19 @@ export default async function DeliveriesPage() {
                     </span>
                   </div>
 
+                  {/* TRAJET */}
                   <div className="mt-5 border-t border-zinc-800 pt-4">
                     <p className="text-xs text-zinc-600">
                       Trajet
                     </p>
 
                     <p className="mt-1 text-sm">
-                      {delivery.origin}
-                      {" → "}
+                      {delivery.origin} →{" "}
                       {delivery.destination}
                     </p>
                   </div>
 
+                  {/* CHAUFFEUR / VEHICULE */}
                   <div className="mt-4 grid grid-cols-2 gap-4">
                     <div>
                       <p className="text-xs text-zinc-600">
@@ -167,11 +180,34 @@ export default async function DeliveriesPage() {
                       </p>
                     </div>
                   </div>
+
+                  {/* DATE */}
+                  <div className="mt-4">
+                    <p className="text-xs text-zinc-600">
+                      Date prévue
+                    </p>
+
+                    <p className="mt-1 text-sm text-zinc-300">
+                      {delivery.scheduledAt.toLocaleString(
+                        "fr-FR"
+                      )}
+                    </p>
+                  </div>
+
+                  {/* ACTION */}
+                  <div className="mt-5 border-t border-zinc-800 pt-4">
+                    <Link
+                      href={`/deliveries/${delivery.id}`}
+                      className="flex w-full items-center justify-center rounded-lg border border-zinc-700 px-4 py-2.5 text-sm font-medium transition hover:bg-zinc-800"
+                    >
+                      Voir la livraison
+                    </Link>
+                  </div>
                 </article>
               ))}
             </div>
 
-            {/* DESKTOP */}
+            {/* TABLETTE / DESKTOP */}
             <div className="hidden overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900 md:block">
               <table className="w-full">
                 <thead className="border-b border-zinc-800">
@@ -197,7 +233,15 @@ export default async function DeliveriesPage() {
                     </th>
 
                     <th className="px-6 py-4 font-medium">
+                      Date prévue
+                    </th>
+
+                    <th className="px-6 py-4 font-medium">
                       Statut
+                    </th>
+
+                    <th className="px-6 py-4 font-medium">
+                      Action
                     </th>
                   </tr>
                 </thead>
@@ -208,29 +252,47 @@ export default async function DeliveriesPage() {
                       key={delivery.id}
                       className="border-b border-zinc-800 last:border-0"
                     >
-                      <td className="px-6 py-4 font-medium">
-                        {delivery.reference}
+                      {/* REFERENCE */}
+                      <td className="px-6 py-4">
+                        <Link
+                          href={`/deliveries/${delivery.id}`}
+                          className="font-medium transition hover:text-zinc-300"
+                        >
+                          {delivery.reference}
+                        </Link>
                       </td>
 
+                      {/* CLIENT */}
                       <td className="px-6 py-4 text-zinc-400">
                         {delivery.client.company ??
                           delivery.client.name}
                       </td>
 
+                      {/* TRAJET */}
                       <td className="px-6 py-4 text-zinc-400">
                         {delivery.origin} →{" "}
                         {delivery.destination}
                       </td>
 
+                      {/* CHAUFFEUR */}
                       <td className="px-6 py-4 text-zinc-400">
                         {delivery.driver.firstName}{" "}
                         {delivery.driver.lastName}
                       </td>
 
+                      {/* VEHICULE */}
                       <td className="px-6 py-4 text-zinc-400">
                         {delivery.vehicle.registration}
                       </td>
 
+                      {/* DATE */}
+                      <td className="px-6 py-4 text-zinc-400">
+                        {delivery.scheduledAt.toLocaleDateString(
+                          "fr-FR"
+                        )}
+                      </td>
+
+                      {/* STATUT */}
                       <td className="px-6 py-4">
                         <span
                           className={`rounded-full border px-2.5 py-1 text-xs font-medium ${getStatusClass(
@@ -239,6 +301,16 @@ export default async function DeliveriesPage() {
                         >
                           {getStatusLabel(delivery.status)}
                         </span>
+                      </td>
+
+                      {/* ACTION */}
+                      <td className="px-6 py-4">
+                        <Link
+                          href={`/deliveries/${delivery.id}`}
+                          className="text-sm font-medium text-zinc-300 transition hover:text-white"
+                        >
+                          Voir →
+                        </Link>
                       </td>
                     </tr>
                   ))}
