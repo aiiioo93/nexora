@@ -9,12 +9,18 @@ type DeleteDriverPageProps = {
   params: Promise<{
     id: string
   }>
+
+  searchParams: Promise<{
+    error?: string
+  }>
 }
 
 export default async function DeleteDriverPage({
   params,
+  searchParams,
 }: DeleteDriverPageProps) {
   const { id } = await params
+  const { error } = await searchParams
   const driverId = parseRouteId(id)
 
   if (driverId === null) {
@@ -35,6 +41,7 @@ export default async function DeleteDriverPage({
     null,
     driver.id
   )
+  const isLinked = error === "linked"
 
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
@@ -74,7 +81,7 @@ export default async function DeleteDriverPage({
                   Permis
                 </p>
 
-                <p className="mt-1 text-sm text-zinc-300">
+                <p className="mt-1 break-all text-sm text-zinc-300">
                   {driver.licenseNumber}
                 </p>
               </div>
@@ -91,13 +98,28 @@ export default async function DeleteDriverPage({
             </div>
           </div>
 
-          {/* AVERTISSEMENT */}
-          <div className="mt-6 rounded-lg border border-red-950 bg-red-950/20 p-4">
-            <p className="text-sm leading-6 text-red-300">
-              Cette action est irréversible. Toutes les informations de ce
-              chauffeur seront supprimées de la base de données.
-            </p>
-          </div>
+          {/* PROTECTION DE L'HISTORIQUE */}
+          {isLinked ? (
+            <div className="mt-6 rounded-lg border border-amber-900 bg-amber-950/20 p-4">
+              <p className="text-sm font-medium text-amber-300">
+                Impossible de supprimer ce chauffeur.
+              </p>
+
+              <p className="mt-2 text-sm leading-6 text-amber-200/70">
+                Ce chauffeur possède un historique de livraisons.
+                Les livraisons doivent rester associées à leur
+                chauffeur afin de préserver l&apos;historique de
+                NEXORA.
+              </p>
+            </div>
+          ) : (
+            <div className="mt-6 rounded-lg border border-red-950 bg-red-950/20 p-4">
+              <p className="text-sm leading-6 text-red-300">
+                Cette action est irréversible. Toutes les informations de ce
+                chauffeur seront supprimées de la base de données.
+              </p>
+            </div>
+          )}
 
           {/* ACTIONS */}
           <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
@@ -105,20 +127,22 @@ export default async function DeleteDriverPage({
               href={`/drivers/${driver.id}`}
               className="flex w-full items-center justify-center rounded-lg border border-zinc-700 px-4 py-3 text-sm font-medium transition hover:bg-zinc-800 sm:w-auto"
             >
-              Annuler
+              {isLinked ? "Retour au chauffeur" : "Annuler"}
             </Link>
 
-            <form
-              action={deleteDriverWithId}
-              className="w-full sm:w-auto"
-            >
-              <button
-                type="submit"
-                className="w-full rounded-lg bg-red-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-red-500"
+            {!isLinked && (
+              <form
+                action={deleteDriverWithId}
+                className="w-full sm:w-auto"
               >
-                Supprimer définitivement
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  className="w-full rounded-lg bg-red-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-red-500 sm:w-auto"
+                >
+                  Supprimer définitivement
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </div>

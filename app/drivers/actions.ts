@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
+
+import { Prisma } from "@/app/generated/prisma/client"
 import prisma from "@/lib/prisma"
 import { driverSchema } from "@/lib/validations"
 
@@ -53,11 +55,38 @@ export async function updateDriver(
 }
 
 export async function deleteDriver(id: number) {
-  await prisma.driver.delete({
+  const deliveriesCount = await prisma.delivery.count({
     where: {
-      id,
+      driverId: id,
     },
   })
+
+  if (deliveriesCount > 0) {
+    redirect(`/drivers/${id}/delete?error=linked`)
+  }
+
+  let isLinked = false
+
+  try {
+    await prisma.driver.delete({
+      where: {
+        id,
+      },
+    })
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2003"
+    ) {
+      isLinked = true
+    } else {
+      throw error
+    }
+  }
+
+  if (isLinked) {
+    redirect(`/drivers/${id}/delete?error=linked`)
+  }
 
   revalidatePath("/drivers")
   revalidatePath("/")

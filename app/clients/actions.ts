@@ -2,6 +2,8 @@
 
 import { revalidatePath } from "next/cache"
 import { redirect } from "next/navigation"
+
+import { Prisma } from "@/app/generated/prisma/client"
 import prisma from "@/lib/prisma"
 import { clientSchema } from "@/lib/validations"
 
@@ -46,13 +48,41 @@ export async function updateClient(
 }
 
 export async function deleteClient(id: number) {
-  await prisma.client.delete({
+  const deliveriesCount = await prisma.delivery.count({
     where: {
-      id,
+      clientId: id,
     },
   })
 
+  if (deliveriesCount > 0) {
+    redirect(`/clients/${id}/delete?error=linked`)
+  }
+
+  let isLinked = false
+
+  try {
+    await prisma.client.delete({
+      where: {
+        id,
+      },
+    })
+  } catch (error) {
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2003"
+    ) {
+      isLinked = true
+    } else {
+      throw error
+    }
+  }
+
+  if (isLinked) {
+    redirect(`/clients/${id}/delete?error=linked`)
+  }
+
   revalidatePath("/clients")
+  revalidatePath("/")
 
   redirect("/clients")
 }

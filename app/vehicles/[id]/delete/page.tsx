@@ -9,6 +9,10 @@ type DeleteVehiclePageProps = {
   params: Promise<{
     id: string
   }>
+
+  searchParams: Promise<{
+    error?: string
+  }>
 }
 
 function getStatusLabel(status: string) {
@@ -28,8 +32,10 @@ function getStatusLabel(status: string) {
 
 export default async function DeleteVehiclePage({
   params,
+  searchParams,
 }: DeleteVehiclePageProps) {
   const { id } = await params
+  const { error } = await searchParams
   const vehicleId = parseRouteId(id)
 
   if (vehicleId === null) {
@@ -50,6 +56,7 @@ export default async function DeleteVehiclePage({
     null,
     vehicle.id
   )
+  const isLinked = error === "linked"
 
   return (
     <main className="min-h-screen bg-zinc-950 text-white">
@@ -78,7 +85,7 @@ export default async function DeleteVehiclePage({
               {vehicle.brand} {vehicle.model}
             </p>
 
-            <p className="mt-1 text-sm text-zinc-500">
+            <p className="mt-1 break-all text-sm text-zinc-500">
               {vehicle.registration}
             </p>
 
@@ -105,32 +112,49 @@ export default async function DeleteVehiclePage({
             </div>
           </div>
 
-          <div className="mt-6 rounded-lg border border-red-950 bg-red-950/20 p-4">
-            <p className="text-sm leading-6 text-red-300">
-              Cette action est irréversible. Le véhicule sera supprimé
-              définitivement de la base de données.
-            </p>
-          </div>
+          {isLinked ? (
+            <div className="mt-6 rounded-lg border border-amber-900 bg-amber-950/20 p-4">
+              <p className="text-sm font-medium text-amber-300">
+                Impossible de supprimer ce véhicule.
+              </p>
+
+              <p className="mt-2 text-sm leading-6 text-amber-200/70">
+                Ce véhicule possède un historique de livraisons.
+                Les livraisons doivent rester associées à leur
+                véhicule afin de préserver l&apos;historique de
+                NEXORA.
+              </p>
+            </div>
+          ) : (
+            <div className="mt-6 rounded-lg border border-red-950 bg-red-950/20 p-4">
+              <p className="text-sm leading-6 text-red-300">
+                Cette action est irréversible. Le véhicule sera supprimé
+                définitivement de la base de données.
+              </p>
+            </div>
+          )}
 
           <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
             <Link
               href={`/vehicles/${vehicle.id}`}
               className="flex w-full items-center justify-center rounded-lg border border-zinc-700 px-4 py-3 text-sm font-medium transition hover:bg-zinc-800 sm:w-auto"
             >
-              Annuler
+              {isLinked ? "Retour au véhicule" : "Annuler"}
             </Link>
 
-            <form
-              action={deleteVehicleWithId}
-              className="w-full sm:w-auto"
-            >
-              <button
-                type="submit"
-                className="w-full rounded-lg bg-red-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-red-500"
+            {!isLinked && (
+              <form
+                action={deleteVehicleWithId}
+                className="w-full sm:w-auto"
               >
-                Supprimer définitivement
-              </button>
-            </form>
+                <button
+                  type="submit"
+                  className="w-full rounded-lg bg-red-600 px-5 py-3 text-sm font-medium text-white transition hover:bg-red-500 sm:w-auto"
+                >
+                  Supprimer définitivement
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </div>
