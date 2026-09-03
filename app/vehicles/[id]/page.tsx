@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { ArrowLeft, Pencil, Trash2, Truck } from "lucide-react"
 import { notFound } from "next/navigation"
 
 import prisma from "@/lib/prisma"
@@ -74,18 +75,17 @@ export default async function VehiclePage({
 
         <Link
           href="/vehicles"
-          className="text-sm text-zinc-500 transition hover:text-white"
+          className="record-back-link"
         >
-          ← Retour aux véhicules
+          <ArrowLeft size={15} />
+          Véhicules
         </Link>
 
-        <header className="mt-6">
-          <p className="text-xs text-zinc-500 sm:text-sm">
-            NEXORA · Véhicule #{vehicle.id}
-          </p>
-
-          <div className="mt-2 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-            <div>
+        <header className="record-hero">
+          <div className="record-identity">
+            <div className="record-icon"><Truck size={21} /></div>
+            <div className="min-w-0">
+              <p className="record-eyebrow">Véhicule #{vehicle.id}</p>
               <div className="flex flex-wrap items-center gap-3">
                 <h1 className="text-2xl font-semibold sm:text-3xl">
                   {vehicle.brand} {vehicle.model}
@@ -104,34 +104,27 @@ export default async function VehiclePage({
                 {vehicle.registration}
               </p>
             </div>
+          </div>
 
-            <div className="flex w-full gap-2 sm:w-auto">
-              <Link
-                href={`/vehicles/${vehicle.id}/edit`}
-                className="flex flex-1 items-center justify-center rounded-lg border border-zinc-700 px-4 py-2.5 text-sm font-medium transition hover:bg-zinc-800 sm:flex-none"
-              >
-                Modifier
-              </Link>
-
-              <Link
-                href={`/vehicles/${vehicle.id}/delete`}
-                className="flex flex-1 items-center justify-center rounded-lg border border-red-900 px-4 py-2.5 text-sm font-medium text-red-400 transition hover:bg-red-950/30 sm:flex-none"
-              >
-                Supprimer
-              </Link>
-            </div>
+          <div className="record-actions">
+            <Link href={`/vehicles/${vehicle.id}/edit`} className="record-action">
+              <Pencil size={15} /> Modifier
+            </Link>
+            <Link href={`/vehicles/${vehicle.id}/delete`} className="record-action record-action-danger">
+              <Trash2 size={15} /> Supprimer
+            </Link>
           </div>
         </header>
 
-        <section className="mt-8 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900">
+        <section className="record-panel">
 
-          <div className="border-b border-zinc-800 p-4 sm:p-6">
+          <div className="record-panel-heading">
             <h2 className="font-medium">
               Informations du véhicule
             </h2>
           </div>
 
-          <div className="divide-y divide-zinc-800">
+          <div className="record-info-grid">
             <Info
               label="Immatriculation"
               value={vehicle.registration}
@@ -181,12 +174,12 @@ function Info({
   value: string
 }) {
   return (
-    <div className="p-4 sm:grid sm:grid-cols-3 sm:gap-6 sm:p-6">
-      <p className="text-xs text-zinc-500 sm:text-sm">
+    <div className="record-info">
+      <p className="record-info-label">
         {label}
       </p>
 
-      <p className="mt-1 text-sm sm:col-span-2 sm:mt-0">
+      <p className="record-info-value">
         {value}
       </p>
     </div>

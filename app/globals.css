@@ -280,10 +280,261 @@ table tbody tr:hover {
   background: rgba(30, 41, 59, 0.3);
 }
 
+.record-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 2.25rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 0.75rem;
+  background: rgba(15, 23, 42, 0.42);
+  color: #94a3b8;
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: 160ms ease;
+}
+
+.record-back-link:hover {
+  border-color: rgba(103, 232, 249, 0.22);
+  color: white;
+  transform: translateX(-2px);
+}
+
+.record-hero {
+  position: relative;
+  overflow: hidden;
+  margin-top: 1rem;
+  padding: 1.15rem;
+  border: 1px solid rgba(103, 232, 249, 0.13);
+  border-radius: 1.5rem;
+  background:
+    linear-gradient(145deg, rgba(15, 30, 52, 0.95), rgba(9, 16, 31, 0.88)),
+    var(--panel);
+  box-shadow: 0 28px 80px rgba(0, 0, 0, 0.24);
+}
+
+.record-hero::after {
+  position: absolute;
+  top: -5rem;
+  right: -4rem;
+  width: 12rem;
+  height: 12rem;
+  border-radius: 999px;
+  background: rgba(34, 211, 238, 0.1);
+  content: "";
+  filter: blur(12px);
+  pointer-events: none;
+}
+
+.record-identity {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+}
+
+.record-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 2.85rem;
+  height: 2.85rem;
+  border: 1px solid rgba(103, 232, 249, 0.18);
+  border-radius: 1rem;
+  background: linear-gradient(145deg, rgba(34, 211, 238, 0.17), rgba(59, 130, 246, 0.08));
+  color: var(--accent);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.07), 0 12px 28px rgba(34, 211, 238, 0.08);
+}
+
+.record-eyebrow {
+  color: #67e8f9;
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.record-actions {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.6rem;
+  margin-top: 1.15rem;
+  padding-top: 1rem;
+  border-top: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.record-actions-single {
+  grid-template-columns: 1fr;
+}
+
+.record-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.16);
+  border-radius: 0.9rem;
+  background: rgba(30, 41, 59, 0.56);
+  color: #e2e8f0;
+  font-size: 0.8rem;
+  font-weight: 650;
+  transition: 160ms ease;
+}
+
+.record-action:hover {
+  border-color: rgba(103, 232, 249, 0.3);
+  background: rgba(30, 41, 59, 0.82);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.record-action-danger {
+  border-color: rgba(248, 113, 113, 0.2);
+  background: rgba(127, 29, 29, 0.13);
+  color: #fca5a5;
+}
+
+.record-action-danger:hover {
+  border-color: rgba(248, 113, 113, 0.34);
+  background: rgba(127, 29, 29, 0.25);
+  color: #fecaca;
+}
+
+.record-panel {
+  overflow: hidden;
+  margin-top: 1rem;
+  border: 1px solid rgba(148, 163, 184, 0.13);
+  border-radius: 1.35rem;
+  background: rgba(15, 23, 42, 0.68);
+  box-shadow: 0 20px 55px rgba(0, 0, 0, 0.14);
+  backdrop-filter: blur(18px);
+}
+
+.record-panel-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.1rem;
+  border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+}
+
+.record-panel-heading::after {
+  width: 2rem;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent-strong), transparent);
+  content: "";
+}
+
+.record-info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
+  background: rgba(148, 163, 184, 0.08);
+}
+
+.record-info {
+  min-width: 0;
+  padding: 1rem;
+  background: rgba(8, 14, 27, 0.78);
+}
+
+.record-info-wide {
+  grid-column: 1 / -1;
+}
+
+.record-info-label {
+  color: #64748b;
+  font-size: 0.66rem;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.record-info-value {
+  margin-top: 0.45rem;
+  overflow-wrap: anywhere;
+  color: #e2e8f0;
+  font-size: 0.86rem;
+  font-weight: 520;
+  line-height: 1.45;
+}
+
+.record-related-card {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  min-width: 0;
+  padding: 0.9rem;
+  border: 1px solid rgba(148, 163, 184, 0.12);
+  border-radius: 1rem;
+  background: rgba(15, 23, 42, 0.62);
+  box-shadow: 0 14px 40px rgba(0, 0, 0, 0.12);
+  transition: 160ms ease;
+}
+
+.record-related-card:hover {
+  border-color: rgba(103, 232, 249, 0.25);
+  background: rgba(20, 31, 52, 0.82);
+  transform: translateY(-2px);
+}
+
+.record-related-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  width: 2.4rem;
+  height: 2.4rem;
+  border: 1px solid rgba(103, 232, 249, 0.12);
+  border-radius: 0.8rem;
+  background: rgba(34, 211, 238, 0.08);
+  color: #67e8f9;
+}
+
 @media (min-width: 640px) {
   .nexora-mobile-nav {
     right: 1.5rem;
     left: 1.5rem;
+  }
+
+  .record-hero {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+  }
+
+  .record-actions,
+  .record-actions-single {
+    display: flex;
+    flex: 0 0 auto;
+    grid-template-columns: none;
+    margin-top: 0;
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .record-panel {
+    margin-top: 1.5rem;
+  }
+
+  .record-info-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .record-info-wide {
+    grid-column: auto;
   }
 }
 

@@ -1,4 +1,13 @@
 import Link from "next/link"
+import {
+  ArrowLeft,
+  Building2,
+  ChevronRight,
+  PackageCheck,
+  Trash2,
+  Truck,
+  UserRound,
+} from "lucide-react"
 import { notFound } from "next/navigation"
 
 import prisma from "@/lib/prisma"
@@ -99,19 +108,18 @@ export default async function DeliveryPage({
         {/* RETOUR */}
         <Link
           href="/deliveries"
-          className="text-sm text-zinc-500 transition hover:text-white"
+          className="record-back-link"
         >
-          ← Retour aux livraisons
+          <ArrowLeft size={15} />
+          Livraisons
         </Link>
 
         {/* HEADER */}
-        <header className="mt-6">
-          <p className="text-xs text-zinc-500 sm:text-sm">
-            NEXORA · Livraison
-          </p>
-
-          <div className="mt-2 flex flex-col gap-5 sm:flex-row sm:items-start sm:justify-between">
-            <div>
+        <header className="record-hero">
+          <div className="record-identity">
+            <div className="record-icon"><PackageCheck size={21} /></div>
+            <div className="min-w-0">
+              <p className="record-eyebrow">Mission logistique</p>
               <div className="flex flex-wrap items-center gap-3">
                 <h1 className="text-2xl font-semibold sm:text-3xl">
                   {delivery.reference}
@@ -130,11 +138,14 @@ export default async function DeliveryPage({
                 {delivery.origin} → {delivery.destination}
               </p>
             </div>
+          </div>
 
+          <div className="record-actions record-actions-single">
             <Link
               href={`/deliveries/${delivery.id}/delete`}
-              className="flex w-full items-center justify-center rounded-lg border border-red-900 px-4 py-2.5 text-sm font-medium text-red-400 transition hover:bg-red-950/30 sm:w-auto"
+              className="record-action record-action-danger"
             >
+              <Trash2 size={15} />
               Supprimer
             </Link>
           </div>
@@ -146,70 +157,61 @@ export default async function DeliveryPage({
           {/* CLIENT */}
           <Link
             href={`/clients/${delivery.client.id}`}
-            className="rounded-xl border border-zinc-800 bg-zinc-900 p-4 transition hover:border-zinc-700 sm:p-5"
+            className="record-related-card"
           >
-            <p className="text-xs text-zinc-500">
-              Client
-            </p>
-
-            <p className="mt-2 font-medium">
-              {delivery.client.company ??
-                delivery.client.name}
-            </p>
-
-            <p className="mt-1 text-sm text-zinc-500">
-              {delivery.client.name}
-            </p>
+            <span className="record-related-icon"><Building2 size={17} /></span>
+            <span className="min-w-0 flex-1">
+              <span className="record-info-label">Client</span>
+              <span className="mt-1 block truncate text-sm font-semibold text-slate-200">
+                {delivery.client.company ?? delivery.client.name}
+              </span>
+              <span className="mt-0.5 block truncate text-xs text-slate-500">{delivery.client.name}</span>
+            </span>
+            <ChevronRight size={16} className="text-slate-600" />
           </Link>
 
           {/* CHAUFFEUR */}
           <Link
             href={`/drivers/${delivery.driver.id}`}
-            className="rounded-xl border border-zinc-800 bg-zinc-900 p-4 transition hover:border-zinc-700 sm:p-5"
+            className="record-related-card"
           >
-            <p className="text-xs text-zinc-500">
-              Chauffeur
-            </p>
-
-            <p className="mt-2 font-medium">
-              {delivery.driver.firstName}{" "}
-              {delivery.driver.lastName}
-            </p>
-
-            <p className="mt-1 text-sm text-zinc-500">
-              {delivery.driver.phone ?? "—"}
-            </p>
+            <span className="record-related-icon"><UserRound size={17} /></span>
+            <span className="min-w-0 flex-1">
+              <span className="record-info-label">Chauffeur</span>
+              <span className="mt-1 block truncate text-sm font-semibold text-slate-200">
+                {delivery.driver.firstName} {delivery.driver.lastName}
+              </span>
+              <span className="mt-0.5 block truncate text-xs text-slate-500">{delivery.driver.phone ?? "—"}</span>
+            </span>
+            <ChevronRight size={16} className="text-slate-600" />
           </Link>
 
           {/* VEHICULE */}
           <Link
             href={`/vehicles/${delivery.vehicle.id}`}
-            className="rounded-xl border border-zinc-800 bg-zinc-900 p-4 transition hover:border-zinc-700 sm:p-5"
+            className="record-related-card"
           >
-            <p className="text-xs text-zinc-500">
-              Véhicule
-            </p>
-
-            <p className="mt-2 font-medium">
-              {delivery.vehicle.brand}{" "}
-              {delivery.vehicle.model}
-            </p>
-
-            <p className="mt-1 text-sm text-zinc-500">
-              {delivery.vehicle.registration}
-            </p>
+            <span className="record-related-icon"><Truck size={17} /></span>
+            <span className="min-w-0 flex-1">
+              <span className="record-info-label">Véhicule</span>
+              <span className="mt-1 block truncate text-sm font-semibold text-slate-200">
+                {delivery.vehicle.brand} {delivery.vehicle.model}
+              </span>
+              <span className="mt-0.5 block truncate text-xs text-slate-500">{delivery.vehicle.registration}</span>
+            </span>
+            <ChevronRight size={16} className="text-slate-600" />
           </Link>
         </section>
 
         {/* DETAILS */}
-        <section className="mt-6 overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900">
-          <div className="border-b border-zinc-800 p-4 sm:p-6">
+        <section className="record-panel">
+          <div className="record-panel-heading">
             <h2 className="font-medium">
               Informations de la mission
             </h2>
           </div>
 
-          <div className="divide-y divide-zinc-800">
+          <div className="record-info-grid">
             <Info
               label="Départ"
               value={delivery.origin}
@@ -318,12 +320,12 @@ function Info({
   value: string
 }) {
   return (
-    <div className="p-4 sm:grid sm:grid-cols-3 sm:gap-6 sm:p-6">
-      <p className="text-xs text-zinc-500 sm:text-sm">
+    <div className="record-info">
+      <p className="record-info-label">
         {label}
       </p>
 
-      <p className="mt-1 break-words text-sm sm:col-span-2 sm:mt-0">
+      <p className="record-info-value">
         {value}
       </p>
     </div>
